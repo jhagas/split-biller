@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.rti--container {
+  --rti-bg: #FFFFFF00;
+  --rti-border: #3f3f46;
+  --rti-main: #fff;
+  --rti-radius: 12px;
+  --rti-s: 0.5rem; /* spacing */
+  --rti-tag: #edf2f7;
+  --rti-tag-remove: #e53e3e;
+
+  @apply py-2 transition-colors border-medium border-default-200
+}
+
+.rti--container:focus-within {
+    box-shadow: var(--rti-main) 0 0 0 0;
+
+    @apply border-default-foreground
+}
