@@ -2,6 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import NavbarCustom from "./components/navbar";
 import { useLocalStorage } from "./libs/useLocalStorage";
 import Home from "./pages/home";
+import Id from "./pages/id";
 
 export type Data = {
   event_name: string;
@@ -31,7 +32,7 @@ function App() {
     },
     {
       path: "/:id",
-      element: <p>Halo register</p>,
+      element: <Id data={data.data} setData={setData} />,
     },
   ]);
 
