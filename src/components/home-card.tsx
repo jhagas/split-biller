@@ -39,6 +39,15 @@ export default function HomeCard({ index, data, setData }: Props) {
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
+      const condition =
+        tempName == "" ||
+        tempName == null ||
+        tempName == undefined ||
+        tempPerson.length == 0;
+      if (condition) {
+        setError("Input must not be empty");
+        return value;
+      }
       if (
         value.data.filter(
           (value, i) => value.id === linkString(tempName) && i !== index

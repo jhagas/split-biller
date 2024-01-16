@@ -29,6 +29,7 @@ export default function Home({ data, setData }: Props) {
   const handleChange = (event: { target: { name: string; value: string } }) => {
     const name = event.target.name;
     const value = event.target.value;
+
     setTempData((values) => ({
       ...values,
       [name]: value,
@@ -40,6 +41,16 @@ export default function Home({ data, setData }: Props) {
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
+      const condition =
+        tempData.event_name == "" ||
+        tempData.event_name == null ||
+        tempData.event_name == undefined ||
+        tempData.persons.length == 0;
+      if (condition) {
+        setError("Input must not be empty");
+        return value;
+      }
+
       if (
         value.data.filter(
           (value) => value.id === linkString(tempData.event_name)
@@ -162,7 +173,7 @@ export default function Home({ data, setData }: Props) {
                   variant="light"
                   onPress={() => {
                     onClose();
-                    setError(null)
+                    setError(null);
                     setTempData({} as Data);
                   }}
                 >

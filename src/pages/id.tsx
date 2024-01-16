@@ -27,6 +27,7 @@ export default function Id({ data, setData }: Props) {
   const { id } = useParams();
   const [tempData, setTempData] = useState<Expense>({} as Expense);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [error, setError] = useState<string | null>();
   const data_id = data.filter((value) => value.id === id);
 
   const handleChange = (event: { target: { name: string; value: string } }) => {
@@ -42,6 +43,20 @@ export default function Id({ data, setData }: Props) {
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
+      const condition =
+        tempData.name == "" ||
+        tempData.name == null ||
+        tempData.name == undefined ||
+        tempData.bailer == "" ||
+        tempData.bailer == null ||
+        tempData.bailer == undefined ||
+        tempData.value == 0 ||
+        tempData.value == null ||
+        tempData.value == undefined;
+      if (condition) {
+        setError("Input must not be empty");
+        return value;
+      }
       const pos = value.data
         .map((e) => e.id)
         .indexOf(linkString(data_id[0].id));
@@ -87,7 +102,9 @@ export default function Id({ data, setData }: Props) {
           </p>
         </div>
 
-        <CalculateExpenses data={data_id[0]} />
+        {data_id[0].data.length !== 0 && (
+          <CalculateExpenses data={data_id[0]} />
+        )}
         <Button
           onPress={onOpen}
           color="success"
@@ -185,6 +202,7 @@ export default function Id({ data, setData }: Props) {
                   labelPlacement="outside"
                   placeholder="Enter the amount of money"
                 />
+                {error && <p className="text-danger">Error: {error}</p>}
               </ModalBody>
               <ModalFooter>
                 <Button

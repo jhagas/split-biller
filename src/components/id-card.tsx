@@ -27,8 +27,15 @@ type Props = {
   persons: string[];
 };
 
-export default function IdCard({ index, expense, setData, id, persons }: Props) {
+export default function IdCard({
+  index,
+  expense,
+  setData,
+  id,
+  persons,
+}: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [error, setError] = useState<string | null>();
   const [tempData, setTempData] = useState<Expense>(expense);
 
   const handleChange = (event: { target: { name: string; value: string } }) => {
@@ -44,6 +51,20 @@ export default function IdCard({ index, expense, setData, id, persons }: Props) 
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
+      const condition =
+        tempData.name == "" ||
+        tempData.name == null ||
+        tempData.name == undefined ||
+        tempData.bailer == "" ||
+        tempData.bailer == null ||
+        tempData.bailer == undefined ||
+        tempData.value == 0 ||
+        tempData.value == null ||
+        tempData.value == undefined;
+      if (condition) {
+        setError("Input must not be empty");
+        return value;
+      }
       const pos = value.data.map((e) => e.id).indexOf(linkString(id));
 
       const pos2 = value.data[pos].data
@@ -171,6 +192,7 @@ export default function IdCard({ index, expense, setData, id, persons }: Props) 
                   labelPlacement="outside"
                   placeholder="Enter the amount of money"
                 />
+                {error && <p className="text-danger">Error: {error}</p>}
               </ModalBody>
               <ModalFooter>
                 <Button
