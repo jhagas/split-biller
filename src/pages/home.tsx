@@ -32,7 +32,7 @@ export default function Home({ data, setData }: Props) {
     setTempData((values) => ({
       ...values,
       [name]: value,
-      id: name === "event_name" ? linkString(value) : values.event_name,
+      id: name === "event_name" ? linkString(value) : values.id,
       persons:
         name === "persons"
           ? value.split(",").map((d) => d.trim())
