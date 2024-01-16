@@ -1,33 +1,35 @@
-import { useParams } from "react-router-dom";
-import { Data, Expense, Sbiller } from "../App";
 import {
+  Card,
+  CardHeader,
+  CardFooter,
+  Button,
+  useDisclosure,
   Autocomplete,
   AutocompleteItem,
-  Button,
   Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
 } from "@nextui-org/react";
-import { FaRupiahSign } from "react-icons/fa6";
+import { HiMiniPencilSquare } from "react-icons/hi2";
+import { Data, Expense, Sbiller } from "../App";
+import DeleteItem from "./id-card-delete";
 import { useState } from "react";
 import linkString from "../libs/tohash";
-import IdCard from "../components/id-card";
-import CalculateExpenses from "../components/id-card-calculate";
 
 type Props = {
-  data: Data[];
+  index: number;
+  expense: Expense;
   setData: React.Dispatch<React.SetStateAction<Sbiller>>;
+  id: string;
+  persons: string[];
 };
 
-export default function Id({ data, setData }: Props) {
-  const { id } = useParams();
-  const [tempData, setTempData] = useState<Expense>({} as Expense);
+export default function IdCard({ index, expense, setData, id, persons }: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const data_id = data.filter((value) => value.id === id);
+  const [tempData, setTempData] = useState<Expense>(expense);
 
   const handleChange = (event: { target: { name: string; value: string } }) => {
     const name = event.target.name;
@@ -42,11 +44,14 @@ export default function Id({ data, setData }: Props) {
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
-      const pos = value.data
-        .map((e) => e.id)
-        .indexOf(linkString(data_id[0].id));
+      const pos = value.data.map((e) => e.id).indexOf(linkString(id));
+
+      const pos2 = value.data[pos].data
+        .map((e) => e.issued_at)
+        .indexOf(expense.issued_at);
 
       const removed = value.data.splice(pos, 1);
+      removed[0].data.splice(pos2, 1);
       onClose();
       setTempData({} as Expense);
 
@@ -72,56 +77,37 @@ export default function Id({ data, setData }: Props) {
     });
   };
 
-  if (data_id.length === 0) {
-    return <p className="text-default-foreground">Route Not Found!</p>;
-  }
-
   return (
     <>
-      <section className="dark:text-white text-zinc-950 py-10 px-7">
-        <div className="my-6 flex flex-col gap-2">
-          <p className="text-6xl">🧭</p>
-          <h1 className="text-4xl font-extrabold">{data_id[0].event_name}</h1>
-          <p className="text-sm opacity-65">
-            {data_id[0].persons.toLocaleString()}
-          </p>
-        </div>
-
-        <CalculateExpenses data={data_id[0]} />
-        <Button
-          onPress={onOpen}
-          color="success"
-          size="md"
-          variant="flat"
-          className="font-medium text-success-600 dark:text-success-400 w-full mt-2"
-        >
-          <FaRupiahSign size={14} />
-          Add Expense
-        </Button>
-        <div className="flex flex-col gap-4 mt-8">
-          {data_id[0].data.length === 0 && (
-            <p className="text-center text-lg font-semibold dark:text-white my-auto text-zinc-950">
-              There is no expenses yet
-            </p>
-          )}
-          {data_id[0].data
-            .sort(
-              (a, b) =>
-                new Date(b.issued_at).getTime() -
-                new Date(a.issued_at).getTime()
-            )
-            .map((d, i) => (
-              <IdCard
-                index={i}
-                key={d.issued_at}
-                expense={d}
-                setData={setData}
-                id={data_id[0].id}
-                persons={data_id[0].persons}
-              />
-            ))}
-        </div>
-      </section>
+      <Card className="py-4 w-full" shadow="sm">
+        <CardHeader className="pb-4 px-4 flex-col items-start gap-1">
+          <h4 className="font-medium text-lg">💵 {expense.name}</h4>
+          <p className="text-sm opacity-55">Paid by {expense.bailer}</p>
+          <h4 className="font-bold text-4xl text-success-600 dark:text-success-400">
+            Rp {expense.value.toLocaleString("id-ID")}
+          </h4>
+        </CardHeader>
+        <CardFooter className="flex gap-2 px-6 justify-end">
+          <div className="flex gap-2">
+            <Button
+              isIconOnly
+              onPress={onOpen}
+              variant="flat"
+              color="default"
+              radius="md"
+              size="md"
+            >
+              <HiMiniPencilSquare size={17} />
+            </Button>
+            <DeleteItem
+              setData={setData}
+              index={index}
+              id={id}
+              issued_at={expense.issued_at}
+            />
+          </div>
+        </CardFooter>
+      </Card>
 
       <Modal
         hideCloseButton
@@ -170,7 +156,7 @@ export default function Id({ data, setData }: Props) {
                   label="Who pays this?"
                   placeholder="Enter the bailer"
                 >
-                  {data_id[0].persons.map((item) => (
+                  {persons.map((item) => (
                     <AutocompleteItem key={item}>{item}</AutocompleteItem>
                   ))}
                 </Autocomplete>

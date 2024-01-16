@@ -4,12 +4,19 @@ import { useLocalStorage } from "./libs/useLocalStorage";
 import Home from "./pages/home";
 import Id from "./pages/id";
 
+export type Expense = {
+  name: string;
+  issued_at: string;
+  bailer: string;
+  value: number;
+};
+
 export type Data = {
   event_name: string;
   id: string;
   edited_at: string;
   persons: string[];
-  data: { bailer: string; value: number }[];
+  data: Expense[];
 };
 
 export type Sbiller = {
@@ -21,8 +28,6 @@ const fallback = { dark: false, data: [] } as Sbiller;
 
 function App() {
   const [data, setData] = useLocalStorage<Sbiller>("sbiller_data", fallback);
-
-  console.log(data);
 
   const router = createBrowserRouter([
     {

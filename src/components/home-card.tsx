@@ -17,8 +17,8 @@ import compareDate from "../libs/compareDate";
 import { useState } from "react";
 import { TagsInput } from "react-tag-input-component";
 import { HiMiniPencilSquare } from "react-icons/hi2";
-import { MdDelete } from "react-icons/md";
 import linkString from "../libs/tohash";
+import DeleteItem from "./home-card-delete";
 
 type Props = {
   index: number;
@@ -75,16 +75,14 @@ export default function HomeCard({ index, data, setData }: Props) {
   return (
     <>
       <Card className="py-4 w-full" shadow="sm">
-        <CardHeader className="pb-4 px-4 flex-col items-start gap-4">
+        <CardHeader className="pb-4 px-4 flex-col items-start gap-3">
           <h4 className="font-bold text-xl">📍 {data.event_name}</h4>
-          <p className="text-sm pl-1">👤 Persons: {data.persons.toString()}</p>
+          <p className="text-sm pl-2 opacity-55">{data.persons.toString()}</p>
         </CardHeader>
-        <CardFooter className="flex gap-2 ml-2">
+        <CardFooter className="flex gap-2 px-6 justify-between">
           <Button
-            onPress={onOpen}
-            className="text-sm"
-            variant="flat"
-            color="success"
+            className="text-sm font-semibold"
+            variant="faded"
             radius="md"
             size="md"
             as={Link}
@@ -92,35 +90,19 @@ export default function HomeCard({ index, data, setData }: Props) {
           >
             Detail
           </Button>
-          <Button
-            isIconOnly
-            onPress={onOpen}
-            variant="faded"
-            color="default"
-            radius="md"
-            size="md"
-          >
-            <HiMiniPencilSquare size={17} />
-          </Button>
-          <Button
-            isIconOnly
-            variant="faded"
-            color="danger"
-            radius="md"
-            size="md"
-            onClick={() => {
-              setData((value) => {
-                value.data.sort(compareDate).splice(index, 1);
-
-                return {
-                  ...value,
-                  data: value.data,
-                };
-              });
-            }}
-          >
-            <MdDelete size={17} />
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              isIconOnly
+              onPress={onOpen}
+              variant="flat"
+              color="default"
+              radius="md"
+              size="md"
+            >
+              <HiMiniPencilSquare size={17} />
+            </Button>
+            <DeleteItem setData={setData} index={index} />
+          </div>
         </CardFooter>
       </Card>
 

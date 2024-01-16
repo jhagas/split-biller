@@ -24,6 +24,7 @@ type Props = {
 export default function Home({ data, setData }: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tempData, setTempData] = useState<Data>({} as Data);
+  const [error, setError] = useState<string | null>();
 
   const handleChange = (event: { target: { name: string; value: string } }) => {
     const name = event.target.name;
@@ -37,8 +38,22 @@ export default function Home({ data, setData }: Props) {
     }));
   };
 
-  const submitData = () => {
-    setData((value) => ({ ...value, data: [...value.data, tempData] }));
+  const submitData = (onClose: () => void) => {
+    setData((value) => {
+      if (
+        value.data.filter(
+          (value) => value.id === linkString(tempData.event_name)
+        ).length !== 0
+      ) {
+        setError("Trip name already exist!");
+        return value;
+      }
+
+      setError(null);
+      onClose();
+      setTempData({} as Data);
+      return { ...value, data: [...value.data, tempData] };
+    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -67,9 +82,12 @@ export default function Home({ data, setData }: Props) {
 
         <div className="flex flex-col gap-4 mt-8">
           {data.length === 0 && (
-            <div className="flex justify-center items-center px-2" style={{
-              minHeight: "calc(100vh - 4rem - 2.5rem - 8rem)"
-            }}>
+            <div
+              className="flex justify-center items-center px-2"
+              style={{
+                minHeight: "calc(100vh - 4rem - 2.5rem - 8rem)",
+              }}
+            >
               <p className="text-center text-lg font-semibold dark:text-white my-auto text-zinc-950">
                 There is no trip yet, click Add Trip above to start your
                 journey!
@@ -96,9 +114,7 @@ export default function Home({ data, setData }: Props) {
             <div
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  onClose();
-                  submitData();
-                  setTempData({} as Data);
+                  submitData(onClose);
                 }
               }}
             >
@@ -128,29 +144,34 @@ export default function Home({ data, setData }: Props) {
                     placeHolder="Press SPACE to add"
                     onKeyUp={(e) => {
                       if (e.key === "Enter") {
-                        onClose();
-                        submitData();
-                        setTempData({} as Data);
+                        submitData(onClose);
                       }
                     }}
-                    separators={[" "]}
+                    separators={[" ", ","]}
                     classNames={{
                       input: "text-sm bg-transparent",
                       tag: "bg-success text-black text-sm pl-2",
                     }}
                   />
                 </div>
+                {error && <p className="text-danger">Error: {error}</p>}
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    setError(null)
+                    setTempData({} as Data);
+                  }}
+                >
                   Close
                 </Button>
                 <Button
                   color="success"
                   onPress={() => {
-                    onClose();
-                    submitData();
-                    setTempData({} as Data);
+                    submitData(onClose);
                   }}
                   className="font-medium"
                 >
