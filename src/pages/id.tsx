@@ -93,13 +93,11 @@ export default function Id({ data, setData }: Props) {
 
   return (
     <>
-      <section className="dark:text-white text-zinc-950 py-10 px-7">
+      <section className="dark:text-white text-zinc-950 py-10 px-7 max-w-[1024px] mx-auto">
         <div className="my-6 flex flex-col gap-2">
           <p className="text-6xl">🧭</p>
           <h1 className="text-4xl font-extrabold">{data_id[0].event_name}</h1>
-          <p className="text-sm opacity-65">
-            {data_id[0].persons.toLocaleString()}
-          </p>
+          <p className="text-sm opacity-65">{data_id[0].persons.join(", ")}</p>
         </div>
 
         {data_id[0].data.length !== 0 && (
@@ -201,6 +199,11 @@ export default function Id({ data, setData }: Props) {
                   onChange={handleChange}
                   labelPlacement="outside"
                   placeholder="Enter the amount of money"
+                  startContent={
+                    <div className="pointer-events-none flex items-center">
+                      <span className="text-default-400 text-small">Rp</span>
+                    </div>
+                  }
                 />
                 {error && <p className="text-danger">Error: {error}</p>}
               </ModalBody>

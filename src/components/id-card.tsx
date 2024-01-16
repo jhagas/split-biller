@@ -87,7 +87,7 @@ export default function IdCard({
               ...removed[0].data,
               {
                 name: tempData.name,
-                issued_at: new Date().toISOString(),
+                issued_at: expense.issued_at,
                 bailer: tempData.bailer,
                 value: tempData.value,
               },
@@ -98,15 +98,23 @@ export default function IdCard({
     });
   };
 
+  const money = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+
   return (
     <>
       <Card className="py-4 w-full" shadow="sm">
         <CardHeader className="pb-4 px-4 flex-col items-start gap-1">
           <h4 className="font-medium text-lg">💵 {expense.name}</h4>
-          <p className="text-sm opacity-55">Paid by {expense.bailer}</p>
+          <p className="text-tiny mb-2 opacity-55">
+            Issued at {new Date(expense.issued_at).toLocaleString("id")}
+          </p>
           <h4 className="font-bold text-4xl text-success-600 dark:text-success-400">
-            Rp {expense.value.toLocaleString("id-ID")}
+            {money.format(expense.value)}
           </h4>
+          <p className="text-sm opacity-55">Paid by {expense.bailer}</p>
         </CardHeader>
         <CardFooter className="flex gap-2 px-6 justify-end">
           <div className="flex gap-2">
@@ -191,6 +199,11 @@ export default function IdCard({
                   onChange={handleChange}
                   labelPlacement="outside"
                   placeholder="Enter the amount of money"
+                  startContent={
+                    <div className="pointer-events-none flex items-center">
+                      <span className="text-default-400 text-small">Rp</span>
+                    </div>
+                  }
                 />
                 {error && <p className="text-danger">Error: {error}</p>}
               </ModalBody>
@@ -212,7 +225,7 @@ export default function IdCard({
                   }}
                   className="font-medium"
                 >
-                  Add Expense
+                  Edit Expense
                 </Button>
               </ModalFooter>
             </div>

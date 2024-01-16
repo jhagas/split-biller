@@ -11,7 +11,6 @@ import {
 import { Data, Sbiller } from "../App";
 import { CiSquarePlus } from "react-icons/ci";
 import { useState } from "react";
-import { TagsInput } from "react-tag-input-component";
 import HomeCard from "../components/home-card";
 import compareDate from "../libs/compareDate";
 import linkString from "../libs/tohash";
@@ -34,6 +33,10 @@ export default function Home({ data, setData }: Props) {
       ...values,
       [name]: value,
       id: name === "event_name" ? linkString(value) : values.event_name,
+      persons:
+        name === "persons"
+          ? value.split(",").map((d) => d.trim())
+          : values.persons,
       edited_at: new Date().toISOString(),
       data: [],
     }));
@@ -42,6 +45,7 @@ export default function Home({ data, setData }: Props) {
   const submitData = (onClose: () => void) => {
     setData((value) => {
       const condition =
+        tempData.persons?.length == undefined ||
         tempData.event_name == "" ||
         tempData.event_name == null ||
         tempData.event_name == undefined ||
@@ -65,16 +69,6 @@ export default function Home({ data, setData }: Props) {
       setTempData({} as Data);
       return { ...value, data: [...value.data, tempData] };
     });
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTagChange = (tags: string[]) => {
-    setTempData((values) => ({
-      ...values,
-      persons: tags,
-      edited_at: new Date().toISOString(),
-      data: [],
-    }));
   };
 
   return (
@@ -110,6 +104,7 @@ export default function Home({ data, setData }: Props) {
           ))}
         </div>
       </section>
+
       <Modal
         hideCloseButton
         isOpen={isOpen}
@@ -145,26 +140,17 @@ export default function Home({ data, setData }: Props) {
                   labelPlacement="outside"
                   placeholder="Enter your trip name"
                 />
-                <div>
-                  <p className="text-sm mb-1 after:content-['*'] after:text-danger after:ml-0.5">
-                    Persons on trip (UNCHANGEABLE)
-                  </p>
-                  <TagsInput
-                    value={tempData.persons ? tempData.persons : []}
-                    onChange={handleTagChange}
-                    placeHolder="Press SPACE to add"
-                    onKeyUp={(e) => {
-                      if (e.key === "Enter") {
-                        submitData(onClose);
-                      }
-                    }}
-                    separators={[" ", ","]}
-                    classNames={{
-                      input: "text-sm bg-transparent",
-                      tag: "bg-success text-black text-sm pl-2",
-                    }}
-                  />
-                </div>
+                <Input
+                  isRequired
+                  variant="bordered"
+                  type="text"
+                  name="persons"
+                  label={`Persons on trip (Separated with comma ",")`}
+                  value={tempData.persons?.join(", ").trim()}
+                  onChange={handleChange}
+                  labelPlacement="outside"
+                  placeholder="Type the person's name"
+                />
                 {error && <p className="text-danger">Error: {error}</p>}
               </ModalBody>
               <ModalFooter>

@@ -15,7 +15,6 @@ import {
 import { Data, Sbiller } from "../App";
 import compareDate from "../libs/compareDate";
 import { useState } from "react";
-import { TagsInput } from "react-tag-input-component";
 import { HiMiniPencilSquare } from "react-icons/hi2";
 import linkString from "../libs/tohash";
 import DeleteItem from "./home-card-delete";
@@ -33,8 +32,8 @@ export default function HomeCard({ index, data, setData }: Props) {
   const [error, setError] = useState<string | null>();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTagChange = (tags: string[]) => {
-    setTempPerson(tags);
+  const handleTagChange = (event: { target: { value: string } }) => {
+    setTempPerson(event.target.value.split(",").map((d) => d.trim()));
   };
 
   const submitData = (onClose: () => void) => {
@@ -43,7 +42,10 @@ export default function HomeCard({ index, data, setData }: Props) {
         tempName == "" ||
         tempName == null ||
         tempName == undefined ||
-        tempPerson.length == 0;
+        tempPerson.length == 0 ||
+        tempPerson[0] == "";
+
+      console.log(condition, tempPerson.length == 0, tempPerson);
       if (condition) {
         setError("Input must not be empty");
         return value;
@@ -86,7 +88,7 @@ export default function HomeCard({ index, data, setData }: Props) {
       <Card className="py-4 w-full" shadow="sm">
         <CardHeader className="pb-4 px-4 flex-col items-start gap-3">
           <h4 className="font-bold text-xl">📍 {data.event_name}</h4>
-          <p className="text-sm pl-2 opacity-55">{data.persons.toString()}</p>
+          <p className="text-sm pl-2 opacity-55">{data.persons.join(", ")}</p>
         </CardHeader>
         <CardFooter className="flex gap-2 px-6 justify-between">
           <Button
@@ -150,24 +152,21 @@ export default function HomeCard({ index, data, setData }: Props) {
                   placeholder="Change your trip name"
                 />
                 <div>
-                  <p className="text-sm">Persons on trip</p>
+                  <p className="text-sm">
+                    Persons on trip (Separated by comma ",")
+                  </p>
                   <p className="text-sm mb-1 text-danger">
                     Changing this will delete all data in this trip!
                   </p>
-                  <TagsInput
-                    value={tempPerson}
+                  <Input
+                    isRequired
+                    variant="bordered"
+                    type="text"
+                    name="persons"
+                    value={tempPerson?.join(", ").trim()}
                     onChange={handleTagChange}
-                    placeHolder="Press SPACE to add"
-                    onKeyUp={(e) => {
-                      if (e.key === "Enter") {
-                        submitData(onClose);
-                      }
-                    }}
-                    separators={[" "]}
-                    classNames={{
-                      input: "text-sm bg-transparent",
-                      tag: "bg-success text-black text-sm pl-2",
-                    }}
+                    labelPlacement="outside"
+                    placeholder="Type the person's name, separate with COMMA"
                   />
                 </div>
                 {error && <p className="text-danger">Error: {error}</p>}
