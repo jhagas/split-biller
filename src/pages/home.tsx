@@ -85,19 +85,15 @@ export default function Home({ data, setData }: Props) {
           Add Trip
         </Button>
 
-        <div className="flex flex-col gap-4 mt-8">
+        <div className="flex flex-col mt-14 gap-4 max-w-sm mx-auto">
           {data.length === 0 && (
-            <div
-              className="flex justify-center items-center px-2"
-              style={{
-                minHeight: "calc(100vh - 4rem - 2.5rem - 8rem)",
-              }}
-            >
-              <p className="text-center text-lg font-semibold dark:text-white my-auto text-zinc-950">
-                There is no trip yet, click Add Trip above to start your
+            <>
+              <h3 className="text-6xl text-center">🚞</h3>
+              <p className="text-center text-lg font-normal dark:text-white my-auto text-zinc-950">
+                There is no trip yet, click <b>Add Trip</b> above to start your
                 journey!
               </p>
-            </div>
+            </>
           )}
           {data.sort(compareDate).map((d, i) => (
             <HomeCard index={i} key={d.edited_at} data={d} setData={setData} />
