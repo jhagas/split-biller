@@ -8,19 +8,24 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { FaCalculator } from "react-icons/fa6";
-import { Data } from "../App";
+import { Expense } from "../App";
 import Twemoji from "./twemoji";
 import { LuCopy } from "react-icons/lu";
 import { IoCheckmarkDone } from "react-icons/io5";
 import { useEffect, useState } from "react";
 
 type Props = {
-  data: Data;
+  data: Expense[];
 };
 
 export default function CalculateExpenses({ data }: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const sorted_data = [...data];
+  sorted_data.sort(
+    (a, b) => new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime()
+  );
 
   const money = new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -29,11 +34,11 @@ export default function CalculateExpenses({ data }: Props) {
 
   const arr = [] as string[][];
   const arr2 = [
-    "--------------------------\n-- Expenses Details\n--------------------------\n",
+    "----------------------------------------------\n-- Expenses Details\n----------------------------------------------\n",
   ] as string[];
 
-  for (let j = 0; j < data.data.length; j++) {
-    const d = data.data[j];
+  for (let j = 0; j < sorted_data.length; j++) {
+    const d = sorted_data[j];
 
     arr2.push(`-- ${d.name.toLocaleUpperCase()}, Bailer : ${d.bailer}`);
     arr2.push(`-- ${new Date(d.issued_at).toLocaleString("id")}`);
@@ -51,7 +56,7 @@ export default function CalculateExpenses({ data }: Props) {
   }
 
   arr2.push(
-    "\n--------------------------\n-- Expenses Calculation\n--------------------------\n"
+    "\n----------------------------------------------\n-- Expenses Calculation\n----------------------------------------------\n"
   );
 
   const sorted = [] as string[];
@@ -143,12 +148,12 @@ export default function CalculateExpenses({ data }: Props) {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="success" variant="light" onPress={() => setIsPopoverOpen(true)}>
-                  {isPopoverOpen ? (
-                    "Copied!"
-                  ) : (
-                    "Copy details"
-                  )}
+                <Button
+                  color="success"
+                  variant="light"
+                  onPress={() => setIsPopoverOpen(true)}
+                >
+                  {isPopoverOpen ? "Copied!" : "Copy details"}
                   {isPopoverOpen ? (
                     <IoCheckmarkDone size={20} />
                   ) : (

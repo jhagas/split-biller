@@ -170,7 +170,7 @@ export default function Id({ data, setData }: Props) {
         </div>
 
         {data_id[0].data.length !== 0 && (
-          <CalculateExpenses data={data_id[0]} />
+          <CalculateExpenses data={data_id[0].data} />
         )}
         <Button
           onPress={onOpen}
