@@ -5,9 +5,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   useDisclosure,
 } from "@nextui-org/react";
 import { FaCalculator } from "react-icons/fa6";
@@ -146,28 +143,18 @@ export default function CalculateExpenses({ data }: Props) {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Popover
-                  isOpen={isPopoverOpen}
-                  onOpenChange={(open) => setIsPopoverOpen(open)}
-                  placement="left"
-                  size="sm"
-                >
-                  <PopoverTrigger>
-                    <Button color="success" variant="light" isIconOnly>
-                      {isPopoverOpen ? (
-                        <IoCheckmarkDone size={20} />
-                      ) : (
-                        <LuCopy size={15} />
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="px-1 py-2">
-                      <div className="text-small">Details copied!</div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-
+                <Button color="success" variant="light" onPress={() => setIsPopoverOpen(true)}>
+                  {isPopoverOpen ? (
+                    "Copied!"
+                  ) : (
+                    "Copy details"
+                  )}
+                  {isPopoverOpen ? (
+                    <IoCheckmarkDone size={20} />
+                  ) : (
+                    <LuCopy size={15} />
+                  )}
+                </Button>
                 <Button color="success" onPress={onClose}>
                   Okay
                 </Button>
