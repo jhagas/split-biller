@@ -10,6 +10,7 @@ import {
 import { Data, Sbiller } from "../App";
 import { MdDelete } from "react-icons/md";
 import linkString from "../libs/tohash";
+import Twemoji from "./twemoji";
 
 type Props = {
   setData: React.Dispatch<React.SetStateAction<Sbiller>>;
@@ -35,6 +36,7 @@ export default function DeleteItem({ setData, id, issued_at }: Props) {
         <MdDelete size={17} />
       </Button>
       <Modal
+        placement="center"
         hideCloseButton
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -48,7 +50,10 @@ export default function DeleteItem({ setData, id, issued_at }: Props) {
           {(onClose) => (
             <div>
               <ModalHeader className="flex flex-col gap-1 text-xl font-bold">
-                Delete Expense
+                <div className="flex items-center gap-2 text-xl font-bold">
+                  <Twemoji emoji="🚮" className="inline w-5" />
+                  <h3>Delete Expense</h3>
+                </div>
               </ModalHeader>
               <ModalBody>
                 <p>Are you sure to delete this expense?</p>
@@ -81,9 +86,7 @@ export default function DeleteItem({ setData, id, issued_at }: Props) {
                           {
                             ...removed[0],
                             edited_at: new Date().toISOString(),
-                            data: [
-                              ...removed[0].data,
-                            ],
+                            data: [...removed[0].data],
                           } as Data,
                         ],
                       };

@@ -142,6 +142,8 @@ export default function HomeCard({ index, data, setData }: Props) {
       </Card>
 
       <Modal
+        placement="center"
+        isDismissable={false}
         hideCloseButton
         isOpen={isOpen}
         onOpenChange={onOpenChange}

@@ -219,6 +219,8 @@ export default function IdCard({
       </Card>
 
       <Modal
+        placement="center"
+        isDismissable={false}
         hideCloseButton
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -238,7 +240,7 @@ export default function IdCard({
               }}
             >
               <ModalHeader className="flex flex-col gap-1 text-xl font-bold">
-              <div className="flex items-center gap-2 text-xl font-bold">
+                <div className="flex items-center gap-2 text-xl font-bold">
                   <Twemoji emoji="💰" className="inline w-5" />
                   <h3>Edit Expense Information</h3>
                 </div>

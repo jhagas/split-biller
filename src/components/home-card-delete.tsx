@@ -10,6 +10,7 @@ import {
 import { Sbiller } from "../App";
 import compareDate from "../libs/compareDate";
 import { MdDelete } from "react-icons/md";
+import Twemoji from "./twemoji";
 
 type Props = {
   setData: React.Dispatch<React.SetStateAction<Sbiller>>;
@@ -33,6 +34,7 @@ export default function DeleteItem({ setData, index }: Props) {
         <MdDelete size={17} />
       </Button>
       <Modal
+        placement="center"
         hideCloseButton
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -46,7 +48,10 @@ export default function DeleteItem({ setData, index }: Props) {
           {(onClose) => (
             <div>
               <ModalHeader className="flex flex-col gap-1 text-xl font-bold">
-                Delete Trip
+                <div className="flex items-center gap-2 text-xl font-bold">
+                  <Twemoji emoji="🚮" className="inline w-5" />
+                  <h3>Delete Trip</h3>
+                </div>
               </ModalHeader>
               <ModalBody>
                 <p>Are you sure to delete this Trip?</p>
