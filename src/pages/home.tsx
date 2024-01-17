@@ -14,6 +14,7 @@ import { useState } from "react";
 import HomeCard from "../components/home-card";
 import compareDate from "../libs/compareDate";
 import linkString from "../libs/tohash";
+import Twemoji from "../components/twemoji";
 
 type Props = {
   data: Data[];
@@ -29,14 +30,22 @@ export default function Home({ data, setData }: Props) {
     const name = event.target.name;
     const value = event.target.value;
 
+    const persons = [] as string[];
+
+    if (name === "persons") {
+      value
+        .split(",")
+        .map((d) => d.trim())
+        .forEach((v, i, a) => {
+          if (v !== "" || i === a.length - 1) persons.push(v);
+        });
+    }
+
     setTempData((values) => ({
       ...values,
       [name]: value,
       id: name === "event_name" ? linkString(value) : values.id,
-      persons:
-        name === "persons"
-          ? value.split(",").map((d) => d.trim())
-          : values.persons,
+      persons: name === "persons" ? persons : values.persons,
       edited_at: new Date().toISOString(),
       data: [],
     }));
@@ -44,14 +53,24 @@ export default function Home({ data, setData }: Props) {
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
+      if (tempData.persons?.length == undefined) {
+        setError("Input must not be empty");
+        return value;
+      }
+
+      const persons = new Set();
+
+      tempData.persons.forEach((v) => {
+        if (v !== "") persons.add(v);
+      });
+
       const condition =
-        tempData.persons?.length == undefined ||
         tempData.event_name == "" ||
         tempData.event_name == null ||
         tempData.event_name == undefined ||
-        tempData.persons.length == 0;
+        persons.size < 2;
       if (condition) {
-        setError("Input must not be empty");
+        setError("Input must not be empty and have at least 2 participants");
         return value;
       }
 
@@ -67,7 +86,13 @@ export default function Home({ data, setData }: Props) {
       setError(null);
       onClose();
       setTempData({} as Data);
-      return { ...value, data: [...value.data, tempData] };
+      return {
+        ...value,
+        data: [
+          ...value.data,
+          { ...tempData, persons: [...persons] as string[] },
+        ],
+      };
     });
   };
 
@@ -85,15 +110,15 @@ export default function Home({ data, setData }: Props) {
           Add Trip
         </Button>
 
-        <div className="flex flex-col mt-14 gap-4 max-w-sm mx-auto">
+        <div className="flex flex-col mt-14 gap-4">
           {data.length === 0 && (
-            <>
-              <h3 className="text-6xl text-center">🚞</h3>
+            <div className="max-w-sm mx-auto flex flex-col gap-6 mt-5">
+              <Twemoji emoji="🚞" className="w-40 mx-auto" />
               <p className="text-center text-lg font-normal dark:text-white my-auto text-zinc-950">
                 There is no trip yet, click <b>Add Trip</b> above to start your
                 journey!
               </p>
-            </>
+            </div>
           )}
           {data.sort(compareDate).map((d, i) => (
             <HomeCard index={i} key={d.edited_at} data={d} setData={setData} />
@@ -114,14 +139,15 @@ export default function Home({ data, setData }: Props) {
         <ModalContent>
           {(onClose) => (
             <div
-              onKeyDown={(e) => {
+              onKeyUp={(e) => {
                 if (e.key === "Enter") {
                   submitData(onClose);
                 }
               }}
             >
-              <ModalHeader className="flex flex-col gap-1 text-xl font-bold">
-                🏞️ Add Trip Information
+              <ModalHeader className="flex items-center gap-2 text-xl font-bold">
+                <Twemoji emoji="🏞️" className="inline w-5" />
+                <h3>Add Trip Information</h3>
               </ModalHeader>
               <ModalBody>
                 <Input
@@ -141,7 +167,7 @@ export default function Home({ data, setData }: Props) {
                   variant="bordered"
                   type="text"
                   name="persons"
-                  label={`Persons on trip (Separated with comma ",")`}
+                  label={`Participants (separated by ",")`}
                   value={tempData.persons?.join(", ").trim()}
                   onChange={handleChange}
                   labelPlacement="outside"

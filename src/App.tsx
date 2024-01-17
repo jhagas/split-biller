@@ -8,6 +8,7 @@ export type Expense = {
   name: string;
   issued_at: string;
   bailer: string;
+  to: string[];
   value: number;
 };
 

@@ -18,7 +18,7 @@ type Props = {
 
 export default function NavbarCustom({ dark, setDark }: Props) {
   return (
-    <Navbar shouldHideOnScroll>
+    <Navbar>
       <NavbarBrand className="gap-1" as={Link} href={"/"}>
         <p className="font-bold text-lg text-success-600 dark:text-success-400">
           {"_<"}

@@ -4,6 +4,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   Button,
+  Checkbox,
   Input,
   Modal,
   ModalBody,
@@ -13,10 +14,11 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { FaRupiahSign } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import linkString from "../libs/tohash";
 import IdCard from "../components/id-card";
 import CalculateExpenses from "../components/id-card-calculate";
+import Twemoji from "../components/twemoji";
 
 type Props = {
   data: Data[];
@@ -25,17 +27,64 @@ type Props = {
 
 export default function Id({ data, setData }: Props) {
   const { id } = useParams();
+  const [all, setAll] = useState(false);
+  const [includePayer, setIncludePayer] = useState(false);
   const [tempData, setTempData] = useState<Expense>({} as Expense);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [error, setError] = useState<string | null>();
   const data_id = data.filter((value) => value.id === id);
 
+  const bailer = tempData.bailer;
+
+  useEffect(() => {
+    setAll(true);
+    setIncludePayer(true);
+  }, [isOpen]);
+
+  useEffect(() => {
+    setIncludePayer(all);
+  }, [all]);
+
+  useEffect(() => {
+    if (data_id.length > 0) {
+      const persons = [...data_id[0].persons];
+      if (all) {
+        const index = persons.indexOf(bailer);
+
+        if (!includePayer && index !== -1) {
+          persons.splice(index, 1);
+        } else if (includePayer && index === 1) {
+          persons.splice(index, 1);
+          persons.unshift(bailer);
+        }
+        setTempData((values) => ({
+          ...values,
+          to: persons,
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [all, includePayer]);
+
   const handleChange = (event: { target: { name: string; value: string } }) => {
     const name = event.target.name;
     const value = event.target.value;
+
+    const persons = [] as string[];
+
+    if (name === "to") {
+      value
+        .split(",")
+        .map((d) => d.trim())
+        .forEach((v, i, a) => {
+          if (v !== "" || i === a.length - 1) persons.push(v);
+        });
+    }
+
     setTempData((values) => ({
       ...values,
       [name]: value,
+      to: name === "to" ? persons : values.to,
       value: name === "value" ? +value : values.value,
       issued_at: new Date().toISOString(),
     }));
@@ -43,6 +92,24 @@ export default function Id({ data, setData }: Props) {
 
   const submitData = (onClose: () => void) => {
     setData((value) => {
+      if (tempData.to?.length == undefined) {
+        setError("Input must not be empty");
+        return value;
+      }
+
+      const persons = new Set();
+
+      for (let i = 0; i < tempData.to.length; i++) {
+        const v = tempData.to[i];
+
+        if (v !== "" && data_id[0].persons.includes(v)) {
+          persons.add(v);
+        } else {
+          setError(`${v} don't exist on trip participants`);
+          return value;
+        }
+      }
+
       const condition =
         tempData.name == "" ||
         tempData.name == null ||
@@ -50,11 +117,12 @@ export default function Id({ data, setData }: Props) {
         tempData.bailer == "" ||
         tempData.bailer == null ||
         tempData.bailer == undefined ||
-        tempData.value == 0 ||
+        tempData.value <= 0 ||
         tempData.value == null ||
-        tempData.value == undefined;
+        tempData.value == undefined ||
+        persons.size < 1;
       if (condition) {
-        setError("Input must not be empty");
+        setError("Input must not be empty and must be at least 1 borrower");
         return value;
       }
       const pos = value.data
@@ -63,7 +131,7 @@ export default function Id({ data, setData }: Props) {
 
       const removed = value.data.splice(pos, 1);
       onClose();
-      setTempData({} as Expense);
+      setTempData({ ...{}, to: data_id[0].persons } as Expense);
 
       return {
         ...value,
@@ -79,6 +147,7 @@ export default function Id({ data, setData }: Props) {
                 issued_at: new Date().toISOString(),
                 bailer: tempData.bailer,
                 value: tempData.value,
+                to: [...persons],
               },
             ],
           } as Data,
@@ -93,9 +162,9 @@ export default function Id({ data, setData }: Props) {
 
   return (
     <>
-      <section className="dark:text-white text-zinc-950 py-10 px-7 max-w-[1024px] mx-auto">
+      <section className="dark:text-white text-zinc-950 py-10 px-4 sm:px-7 max-w-[1024px] mx-auto">
         <div className="my-6 flex flex-col gap-2">
-          <p className="text-6xl">🧭</p>
+          <Twemoji emoji="🧭" className="w-[3.75rem]" />
           <h1 className="text-4xl font-extrabold">{data_id[0].event_name}</h1>
           <p className="text-sm opacity-65">{data_id[0].persons.join(", ")}</p>
         </div>
@@ -158,7 +227,10 @@ export default function Id({ data, setData }: Props) {
               }}
             >
               <ModalHeader className="flex flex-col gap-1 text-xl font-bold">
-                💰 Expense Information
+                <div className="flex items-center gap-2 text-xl font-bold">
+                  <Twemoji emoji="💰" className="inline w-5" />
+                  <h3>Add Expense Information</h3>
+                </div>
               </ModalHeader>
               <ModalBody>
                 <Input
@@ -189,6 +261,40 @@ export default function Id({ data, setData }: Props) {
                     <AutocompleteItem key={item}>{item}</AutocompleteItem>
                   ))}
                 </Autocomplete>
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm after:content-['*'] after:text-danger after:ml-0.5">
+                    Borrower (Separated with ",")
+                  </p>
+                  <Checkbox
+                    isSelected={all}
+                    onValueChange={(isSelected) => setAll(isSelected)}
+                    color="success"
+                  >
+                    All participant
+                  </Checkbox>
+                  {all && (
+                    <Checkbox
+                      isSelected={includePayer}
+                      onValueChange={(isSelected) =>
+                        setIncludePayer(isSelected)
+                      }
+                      color="success"
+                    >
+                      Include payer?
+                    </Checkbox>
+                  )}
+                  <Input
+                    isRequired
+                    disabled={all}
+                    variant={all ? "flat" : "bordered"}
+                    type="text"
+                    name="to"
+                    value={tempData.to?.join(", ").trim()}
+                    onChange={handleChange}
+                    labelPlacement="outside"
+                    placeholder="Type the person's name"
+                  />
+                </div>
                 <Input
                   isRequired
                   variant="bordered"
@@ -213,7 +319,7 @@ export default function Id({ data, setData }: Props) {
                   variant="light"
                   onPress={() => {
                     onClose();
-                    setTempData({} as Expense);
+                    setTempData({ ...{}, to: data_id[0].persons } as Expense);
                   }}
                 >
                   Close

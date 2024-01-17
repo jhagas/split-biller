@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ['"Noto Color Emoji"', '"Inter"', ...defaultTheme.fontFamily.sans]
+        inter: ['"Inter"', ...defaultTheme.fontFamily.sans]
       }
     },
   },

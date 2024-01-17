@@ -22,14 +22,14 @@ export default function CalculateExpenses({ data }: Props) {
   for (let j = 0; j < data.data.length; j++) {
     const d = data.data[j];
 
-    for (let i = 0; i < data.persons.length; i++) {
-      if (data.persons[i] === d.bailer) continue;
+    for (let i = 0; i < d.to.length; i++) {
+      if (d.to[i] === d.bailer) continue;
 
       arr.push([
-        data.persons[i],
+        d.to[i],
         ">",
         d.bailer,
-        `${d.value / data.persons.length}`,
+        `${d.value / d.to.length}`,
       ]);
     }
   }
