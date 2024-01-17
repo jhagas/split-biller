@@ -174,8 +174,7 @@ export default function IdCard({
   };
 
   const money = new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+    maximumFractionDigits: 0,
   });
 
   return (
@@ -190,7 +189,7 @@ export default function IdCard({
             Issued at {new Date(expense.issued_at).toLocaleString("id")}
           </p>
           <h4 className="font-bold text-4xl text-success-600 dark:text-success-400">
-            {money.format(expense.value)}
+            <p className="text-3xl inline font-normal">Rp</p>{money.format(expense.value)}
           </h4>
           <p className="text-sm opacity-55">
             Paid by {expense.bailer} for {expense.to.join(", ")}

@@ -28,8 +28,7 @@ export default function CalculateExpenses({ data }: Props) {
   );
 
   const money = new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+    maximumFractionDigits: 0,
   });
 
   const arr = [] as string[][];
@@ -48,7 +47,9 @@ export default function CalculateExpenses({ data }: Props) {
 
       arr.push([d.to[i], ">", d.bailer, `${d.value / d.to.length}`]);
       arr2.push(
-        `${d.to[i]} has to pay ${d.value / d.to.length} to ${d.bailer}`
+        `${d.to[i]} has to pay Rp${money.format(d.value / d.to.length)} to ${
+          d.bailer
+        }`
       );
     }
 
@@ -81,9 +82,9 @@ export default function CalculateExpenses({ data }: Props) {
 
     if (value < 0) {
       value = -value;
-      sorted.push(`${nama2} has to pay ${money.format(value)} to ${nama1}`);
+      sorted.push(`${nama2} has to pay Rp${money.format(value)} to ${nama1}`);
     } else if (value > 0) {
-      sorted.push(`${nama1} has to pay ${money.format(value)} to ${nama2}`);
+      sorted.push(`${nama1} has to pay Rp${money.format(value)} to ${nama2}`);
     }
   }
 
