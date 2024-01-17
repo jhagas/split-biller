@@ -112,8 +112,8 @@ export default function Home({ data, setData }: Props) {
 
         <div className="flex flex-col mt-14 gap-4">
           {data.length === 0 && (
-            <div className="max-w-sm mx-auto flex flex-col gap-6 mt-5">
-              <Twemoji emoji="🚞" className="w-40 mx-auto" />
+            <div className="max-w-sm mx-auto flex flex-col items-center gap-6 mt-5">
+              <Twemoji emoji="🚞" className="w-40" />
               <p className="text-center text-lg font-normal dark:text-white my-auto text-zinc-950">
                 There is no trip yet, click <b>Add Trip</b> above to start your
                 journey!
